@@ -16,7 +16,6 @@ class NFL_Function {
     const url = `https://AxApiKeys.vault.azure.net/`;
     const secretClient = new SecretClient(url, credential);
     const nft_nba_token = await secretClient.getSecret(secretName).then(result => result.value);
-    console.log("storage "+nft_nba_token);
 
     // get athletes from sportsdata
     const sdAthleteList = await sportsDataRequest.getSportsdataAthletes("NFL");

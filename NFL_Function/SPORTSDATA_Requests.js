@@ -15,7 +15,6 @@ class SPORTSDATA_Requests {
         const secretUrl = `https://AxApiKeys.vault.azure.net/`;
         const secretClient = new SecretClient(secretUrl, credential);
         const key = await secretClient.getSecret(secretName).then(result => result.value);
-        console.log("key: "+key);
 
         let url = URL_prefix + sport + URL_suffix + key;
         
