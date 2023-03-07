@@ -12,7 +12,7 @@ class NFL_Function {
 
     // TODO: Hide this key
     const credential = new DefaultAzureCredential();
-    const secretName = "NFT-STORAGE-NFL-API-KEY";
+    const secretName = "STORAGE-NFL-PROD";
     const url = `https://AxApiKeys.vault.azure.net/`;
     const secretClient = new SecretClient(url, credential);
     const nft_nba_token = await secretClient.getSecret(secretName).then(result => result.value);
