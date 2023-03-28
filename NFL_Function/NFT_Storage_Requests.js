@@ -109,7 +109,23 @@ class NFT_Storage_Request {
         }
         };
     
-        const req = https.request(options, res => {});
+        const req = https.request(options, res => {
+            let responseData = '';
+          
+            res.on('data', chunk => {
+              responseData += chunk;
+            });
+          
+            res.on('end', () => {
+              const response = JSON.parse(responseData);
+              if (response.ok) {
+                const cid = response.value.cid;
+                console.log(`CID: ${cid}`);
+              } else {
+                console.error('Upload failed:', response);
+              }
+            });
+          });
     
         req.on('error', error => {
             console.error(error);
