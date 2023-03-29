@@ -126,6 +126,7 @@ class NFT_Storage_Request {
                     const path = 'nfl.json';
 
                     const new_directory_cid = response.value.cid;
+                    console.log(`LOGGING PATH: https://api.github.com/repos/${org}/${repo}/contents/${path}`)
 
                     // Fetch the current content of the file
                     fetch(`https://api.github.com/repos/${org}/${repo}/contents/${path}`, {
