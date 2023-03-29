@@ -121,14 +121,14 @@ class NFT_Storage_Request {
                 // update sports-cids (if the write happened)
                 const response = JSON.parse(responseData);
                 if (response.ok) {
-                    const username = 'alexblackwell1';
+                    const org = 'AthleteX-DAO';
                     const repo = 'sports-cids';
                     const path = 'nfl.json';
 
                     const new_directory_cid = response.value.cid;
 
                     // Fetch the current content of the file
-                    fetch(`https://api.github.com/repos/${username}/${repo}/contents/${path}`, {
+                    fetch(`https://api.github.com/repos/${org}/${repo}/contents/${path}`, {
                     headers: {
                         'Authorization': `Bearer ${github_access_token}`,
                         'Accept': 'application/vnd.github.v3+json'
