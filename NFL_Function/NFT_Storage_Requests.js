@@ -1,5 +1,6 @@
 const https = require('https');
 const crypto = require('crypto');
+const fetch = require('node-fetch');
 
 class NFT_Storage_Request {
     constructor() {}
@@ -75,7 +76,7 @@ class NFT_Storage_Request {
         );
     }
   
-    async uploadAndDelete(athleteJsons, old_directory, token) {
+    async uploadAndDelete(athleteJsons, old_directory, token, github_access_token) {
     
         const did = await this.getDID(token);
     
@@ -117,15 +118,65 @@ class NFT_Storage_Request {
             });
           
             res.on('end', () => {
-              const response = JSON.parse(responseData);
-              if (response.ok) {
-                const cid = response.value.cid;
-                console.log(`CID: ${cid}`);
-              } else {
-                console.error('Upload failed:', response);
-              }
+                // update sports-cids (if the write happened)
+                const response = JSON.parse(responseData);
+                if (response.ok) {
+                    const username = 'alexblackwell1';
+                    const repo = 'sports-cids';
+                    const path = 'nfl.json';
+
+                    const new_directory_cid = response.value.cid;
+
+                    // Fetch the current content of the file
+                    fetch(`https://api.github.com/repos/${username}/${repo}/contents/${path}`, {
+                    headers: {
+                        'Authorization': `Bearer ${github_access_token}`,
+                        'Accept': 'application/vnd.github.v3+json'
+                    }
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        // Parse the content as base64 and decode it
+                        const content = Buffer.from(data.content, 'base64').toString('utf-8');
+
+                        // Parse the JSON
+                        const json = JSON.parse(content);
+
+                        // Update the directory property
+                        json.directory = new_directory_cid;
+
+                        // Encode the JSON as base64
+                        const newContent = Buffer.from(JSON.stringify(json), 'utf-8').toString('base64');
+
+                        // Commit the changes to the file
+                        return fetch(`https://api.github.com/repos/${username}/${repo}/contents/${path}`, {
+                            method: 'PUT',
+                            headers: {
+                            'Authorization': `Bearer ${github_access_token}`,
+                            'Accept': 'application/vnd.github.v3+json'
+                            },
+                            body: JSON.stringify({
+                            message: 'Update directory in nfl.json',
+                            content: newContent,
+                            sha: data.sha
+                            })
+                        });
+                    })
+                    .then(response => {
+                        if (response.ok) {
+                            // console.log('File updated successfully!');
+                        } else {
+                            console.error('Failed to update file:', response.statusText);
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error:', error);
+                    });
+                } else {
+                    console.error('Upload failed:', response);
+                }
             });
-          });
+        });
     
         req.on('error', error => {
             console.error(error);

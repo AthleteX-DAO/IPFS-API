@@ -12,10 +12,12 @@ class NFL_Function {
 
     // TODO: Hide this key
     const credential = new DefaultAzureCredential();
-    const secretName = "STORAGE-NFL-PROD";
+    const storageName = "STORAGE-NFL-PROD";
+    const githubName = "GITHUB-PAK"
     const url = `https://AxApiKeys.vault.azure.net/`;
     const secretClient = new SecretClient(url, credential);
-    const nft_nba_token = await secretClient.getSecret(secretName).then(result => result.value);
+    const nft_nba_token = await secretClient.getSecret(storageName).then(result => result.value);
+    const github_access_token = await secretClient.getSecret(githubName).then(result => result.value);
 
     // get athletes from sportsdata
     const sdAthleteList = await sportsDataRequest.getSportsdataAthletes("NFL");
@@ -114,7 +116,7 @@ class NFL_Function {
     );
 
     // send the athlete json to nft.storage
-    nftStorageRequest.uploadAndDelete(athlete_jsons, athlete_directory, nft_nba_token);
+    nftStorageRequest.uploadAndDelete(athlete_jsons, athlete_directory, nft_nba_token, github_access_token);
   }
 
   async updatePriceList(files, athlete, directory, time, token) {
