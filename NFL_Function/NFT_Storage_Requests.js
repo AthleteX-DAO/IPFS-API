@@ -124,12 +124,12 @@ class NFT_Storage_Request {
                     const org = 'AthleteX-DAO';
                     const repo = 'sports-cids';
                     const path = 'nfl.json';
+                    const url = `https://api.github.com/repos/${org}/${repo}/contents/${path}`;
 
                     const new_directory_cid = response.value.cid;
-                    console.log(`LOGGING PATH: https://api.github.com/repos/${org}/${repo}/contents/${path}`)
 
                     // Fetch the current content of the file
-                    fetch(`https://api.github.com/repos/${org}/${repo}/contents/${path}`, {
+                    fetch(url, {
                     headers: {
                         'Authorization': `Bearer ${github_access_token}`,
                         'Accept': 'application/vnd.github.v3+json'
@@ -150,7 +150,7 @@ class NFT_Storage_Request {
                         const newContent = Buffer.from(JSON.stringify(json), 'utf-8').toString('base64');
 
                         // Commit the changes to the file
-                        return fetch(`https://api.github.com/repos/${username}/${repo}/contents/${path}`, {
+                        return fetch(url, {
                             method: 'PUT',
                             headers: {
                             'Authorization': `Bearer ${github_access_token}`,
