@@ -118,6 +118,7 @@ class NFT_Storage_Request {
             });
           
             res.on('end', () => {
+                console.log("End write to ipfs");
                 // update sports-cids (if the write happened)
                 const response = JSON.parse(responseData);
                 if (response.ok) {
@@ -126,6 +127,7 @@ class NFT_Storage_Request {
                     const path = 'nfl.json';
 
                     const new_directory_cid = response.value.cid;
+                    console.log("Response: OK\nNew CID: "+new_directory_cid);
 
                     // Fetch the current content of the file
                     fetch(`https://api.github.com/repos/${username}/${repo}/contents/${path}`, {
@@ -147,6 +149,7 @@ class NFT_Storage_Request {
 
                         // Encode the JSON as base64
                         const newContent = Buffer.from(JSON.stringify(json), 'utf-8').toString('base64');
+                        console.log("Writing...")
 
                         // Commit the changes to the file
                         return fetch(`https://api.github.com/repos/${username}/${repo}/contents/${path}`, {
@@ -164,7 +167,7 @@ class NFT_Storage_Request {
                     })
                     .then(response => {
                         if (response.ok) {
-                            // console.log('File updated successfully!');
+                            console.log('File updated successfully!');
                         } else {
                             console.error('Failed to update file:', response.statusText);
                         }
