@@ -101,6 +101,7 @@ class NFL_Function {
         athlete_jsons.push(
             {
                 ID: current_athlete.PlayerID+"_history",
+                Name: current_athlete.Name,
                 Hour: prices[0],
                 Day: prices[1],
             }
