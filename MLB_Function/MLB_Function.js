@@ -24,12 +24,15 @@ class MLB_Function {
     // Get sportsdata key for mlb
     const sd_key = await secretClient.getSecret(sd_secretName).then(result => result.value);
 
-    console.log("keys");
+    console.log(`keys: ${sd_key}`);
 
     // get athletes from sportsdata
     const sdAthleteList = await sportsDataRequest.getSportsdataAthletes("MLB", sd_key);
     // get the current time
     const current_time = new Date();
+
+    console.log(`list: ${sdAthleteList}`);
+
 
     // seperate list of athletes and athlete file directory
     var storage_athlete_list;
@@ -37,6 +40,8 @@ class MLB_Function {
 
     const github_response = await axios.get('https://raw.githubusercontent.com/AthleteX-DAO/sports-cids/main/mlb.json');
     const { list, directory } = github_response.data;
+
+    console.log(`github: ${list} ${directory}`);
     
     storage_athlete_list = list;
     // if only the athlete list exists
@@ -51,7 +56,7 @@ class MLB_Function {
     storage_athlete_list = await nftStorageRequest.fetchDesiredAthleteList(storage_athlete_list, nft_mlb_token);
     storage_athlete_list = storage_athlete_list.athletes;
 
-    console.log("storage")
+    console.log(`storage: ${storage_athlete_list}`)
 
     // list of AthleteIDs in the directory
     var file_list = [];
