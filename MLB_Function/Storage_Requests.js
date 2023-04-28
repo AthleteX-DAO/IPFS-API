@@ -34,14 +34,14 @@ class Storage_Request {
         return did_request.value;
     }
   
-    async fetchStorage(token) {
-        const file_list_request = await this.getResponse(
-            "https://api.nft.storage/",
+    async fetchStorage(cid, token) {
+        const directory_request = await this.getResponse(
+            `https://api.nft.storage/${cid}`,
             token,
         );
-        let list_data = file_list_request.value;
+        let directory = directory_request.value;
         
-        return list_data;
+        return directory;
     }
   
     fetchAllAthletesIDs(directory) {
@@ -67,9 +67,9 @@ class Storage_Request {
     }
   
     async fetchDesiredAthleteList(directory, token) {
-        // let cid = directory.cid;
+        let cid = directory.cid;
         return await this.getResponse(
-            "https://" + directory + ".ipfs.nftstorage.link/",
+            "https://" + cid + ".ipfs.nftstorage.link/",
             token,
         );
     }
@@ -159,7 +159,7 @@ class Storage_Request {
                     });
 
                     if (updateResponse.ok) {
-                        if (old_directory !== null) {
+                        if (old_directory != null) {
                             this.deleteFile(old_directory, token);
                         }
                     } else {
@@ -181,7 +181,7 @@ class Storage_Request {
     }
 
     deleteFile(file, token) {
-        fetch("https://api.nft.storage/" + file, {
+        fetch("https://api.nft.storage/" + file.cid, {
           method: 'DELETE',
           headers: {
             'Authorization': token,
