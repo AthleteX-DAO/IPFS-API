@@ -24,6 +24,7 @@ class MLB_Function {
     // Get sportsdata key for mlb
     const sd_key = await secretClient.getSecret(sd_secretName).then(result => result.value);
 
+    console.log("keys");
 
     // get athletes from sportsdata
     const sdAthleteList = await sportsDataRequest.getSportsdataAthletes("MLB", sd_key);
@@ -49,6 +50,8 @@ class MLB_Function {
     
     storage_athlete_list = await nftStorageRequest.fetchDesiredAthleteList(storage_athlete_list, nft_mlb_token);
     storage_athlete_list = storage_athlete_list.athletes;
+
+    console.log("storage")
 
     // list of AthleteIDs in the directory
     var file_list = [];
@@ -120,6 +123,8 @@ class MLB_Function {
             } 
         );
     }
+
+    console.log("calculations")
 
     // add the all athletes file to the final json
     athlete_jsons.push(
