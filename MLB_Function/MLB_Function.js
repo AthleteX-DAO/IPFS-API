@@ -25,27 +25,15 @@ class MLB_Function {
     // Get sportsdata key for mlb
     const sd_key = await secretClient.getSecret(sd_secretName).then(result => result.value);
 
-    console.log(`pre ath get`)
-
     // get athletes from sportsdata
     const sdAthleteList = await sportsDataRequest.getSportsdataAthletes("MLB", sd_key);
-
-    console.log(`post ath get`)
-
     // get the current time
     const current_time = new Date();
-
-    console.log(`post time`)
 
     // seperate list of athletes and athlete file directory
     var storage_athlete_list;
 
-    console.log(`sal`)
-
     var athlete_directory;
-
-    console.log(`github start`)
-    console.log(await axios.get('https://raw.githubusercontent.com/AthleteX-DAO/sports-cids/main/mlb.json'))
 
     const github_response = await axios.get('https://raw.githubusercontent.com/AthleteX-DAO/sports-cids/main/mlb.json');
     const { list, directory } = github_response.data;
@@ -61,6 +49,8 @@ class MLB_Function {
     else {
         athlete_directory = directory;
     }
+
+    console.log("53")
     
     storage_athlete_list = await nftStorageRequest.fetchDesiredAthleteList(storage_athlete_list, nft_mlb_token);
     storage_athlete_list = storage_athlete_list.athletes;
