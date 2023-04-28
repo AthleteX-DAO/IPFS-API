@@ -3,30 +3,30 @@ const SPORTSDATA_Requests = require('./SPORTSDATA_Requests.js');
 const { DefaultAzureCredential } = require('@azure/identity');
 const { SecretClient } = require('@azure/keyvault-secrets');
 
-class NFL_Function {
+class MLB_Function {
   constructor() {}
 
-  async nfl_function() {
+  async mlb_function() {
     const sportsDataRequest = new SPORTSDATA_Requests();
     const nftStorageRequest = new NFT_Storage_Request();
 
     const credential = new DefaultAzureCredential();
     const url = `https://AxApiKeys.vault.azure.net/`;
 
+    // same for any sport so use NFL
     const storageName = "STORAGE-NFL-PROD";
     const githubName = "GITHUB-PAK"
+    const sd_secretName = "SD-MLB-KEY";
+    const secretClient = new SecretClient(url, credential);
+    const nft_mlb_token = await secretClient.getSecret(storageName).then(result => result.value);
     // get github access key
-    const github_secretClient = new SecretClient(url, credential);
-    const nft_nba_token = await github_secretClient.getSecret(storageName).then(result => result.value);
-    const github_access_token = await github_secretClient.getSecret(githubName).then(result => result.value);
-    // Get sportsdata key for nlf
-    const sd_secretName = "SD-NFL-KEY";
-    const sd_secretClient = new SecretClient(secretUrl, credential);
-    const sd_key = await sd_secretClient.getSecret(sd_secretName).then(result => result.value);
+    const github_access_token = await secretClient.getSecret(githubName).then(result => result.value);
+    // Get sportsdata key for mlb
+    const sd_key = await secretClient.getSecret(sd_secretName).then(result => result.value);
 
 
     // get athletes from sportsdata
-    const sdAthleteList = await sportsDataRequest.getSportsdataAthletes("NFL", sd_key);
+    const sdAthleteList = await sportsDataRequest.getSportsdataAthletes("MLB", sd_key);
     // get the current time
     const current_time = new Date();
 
@@ -34,12 +34,12 @@ class NFL_Function {
     var storage_athlete_list;
     var athlete_directory;
 
-    const github_response = await axios.get('https://raw.githubusercontent.com/AthleteX-DAO/sports-cids/main/nfl.json');
+    const github_response = await axios.get('https://raw.githubusercontent.com/AthleteX-DAO/sports-cids/main/mlb.json');
     const { list, directory } = github_response.data;
     
     storage_athlete_list = list;
     // if only the athlete list exists
-    if (directory == "null") {
+    if (directory === "null") {
         athlete_directory = null;
     }
     // else, both should exist
@@ -47,7 +47,7 @@ class NFL_Function {
         athlete_directory = directory;
     }
     
-    storage_athlete_list = await nftStorageRequest.fetchDesiredAthleteList(storage_athlete_list, nft_nba_token);
+    storage_athlete_list = await nftStorageRequest.fetchDesiredAthleteList(storage_athlete_list, nft_mlb_token);
     storage_athlete_list = storage_athlete_list.athletes;
 
     // list of AthleteIDs in the directory
@@ -61,6 +61,22 @@ class NFL_Function {
     // all_athletes will be attached to athlete_jsons in the end
     var athlete_jsons = new Array();
     var all_athletes_json = new Array();
+
+    // need league WeightOnBase (mean not including those with no PlateAppearances)
+    // need sum of League PlateAppearances
+    let lgWeightOnBase = 0.0;
+    let sumLeaguePlateAppearances = 0;
+    let numAthletes = 0;
+    for (let i = 0; i < sdAthleteList.length; i++) {
+        if (sdAthleteList[i].PlateAppearances > 0) {
+            numAthletes++;
+            sumLeaguePlateAppearances += sdAthleteList[i].PlateAppearances;
+            lgWeightOnBase += sdAthleteList[i].WeightedOnBasePercentage;
+        }
+    }
+
+    lgWeightOnBase /= numAthletes;
+
     
     // add time and price to each athlete
     // then add needed vars to new json list
@@ -72,25 +88,21 @@ class NFL_Function {
         }
         let current_athlete = sdAthleteList[i];
         // add price and time to athlete
-        this.computePrice(current_athlete, current_time);
+        this.computePrice(current_athlete, current_time, lgWeightOnBase, sumLeaguePlateAppearances);
 
         // add needed vars to new athlete
         var cur_athlete_json = {
-            id: current_athlete.PlayerID,
-            name: current_athlete.Name,
-            team: current_athlete.Team,
-            position: current_athlete.Position,
-            passingYards: current_athlete.PassingYards,
-            passingTouchdowns: current_athlete.PassingTouchdowns,
-            reception: current_athlete.Receptions,
-            receivingYards: current_athlete.ReceivingYards,
-            receivingTouchdowns: current_athlete.ReceivingTouchdowns,
-            rushingYards: current_athlete.RushingYards,
-            PassingInterceptions: current_athlete.PassingInterceptions,
-            offensiveSnapsPlayed: current_athlete.OffensiveSnapsPlayed,
-            defensiveSnapsPlayed: current_athlete.DefensiveSnapsPlayed,
-            price: current_athlete.Price,
-            timestamp: current_time,
+            ID: current_athlete.PlayerID,
+            Name: current_athlete.Name,
+            Team: current_athlete.Team,
+            Position: current_athlete.Position,
+            PlateAppearances: current_athlete.PlateAppearances,
+            WeightedOnBasePercentage: current_athlete.WeightedOnBasePercentage,
+            StolenBases: current_athlete.StolenBases,
+            Errors: current_athlete.Errors,
+            Games: current_athlete.Games,
+            BookPrice: current_athlete.Price,
+            Time: current_time,
         };
 
         // add the current athlete to the json list
@@ -98,13 +110,13 @@ class NFL_Function {
         // add the current athlete to the all athlete list
         all_athletes_json.push(cur_athlete_json);
         // add their priceHistory to the json list
-        const prices = await this.updatePriceList(file_list, current_athlete, athlete_directory, current_time, nft_nba_token);
+        const prices = await this.updatePriceList(file_list, current_athlete, athlete_directory, current_time, nft_mlb_token);
         athlete_jsons.push(
             {
-                id: current_athlete.PlayerID+"_history",
-                name: current_athlete.Name,
-                hour: prices[0],
-                day: prices[1],
+                ID: current_athlete.PlayerID+"_history",
+                Name: current_athlete.Name,
+                Hour: prices[0],
+                Day: prices[1],
             } 
         );
     }
@@ -112,13 +124,13 @@ class NFL_Function {
     // add the all athletes file to the final json
     athlete_jsons.push(
         {
-            id: "ALL_PLAYERS",
-            athletes: all_athletes_json
+            ID: "ALL_PLAYERS",
+            Athletes: all_athletes_json
         }
     );
 
     // send the athlete json to nft.storage
-    nftStorageRequest.uploadAndDelete(athlete_jsons, athlete_directory, nft_nba_token, github_access_token, "nfl");
+    nftStorageRequest.uploadAndDelete(athlete_jsons, athlete_directory, nft_mlb_token, github_access_token, "mlb");
   }
 
   async updatePriceList(files, athlete, directory, time, token) {
@@ -130,8 +142,8 @@ class NFL_Function {
     // if there is no file, return [[hour],[day]]
     if (!files.includes(file)) {
         return [
-            [ {price: current_price, timestamp: time} ],
-            [ {price: current_price, timestamp: time} ],
+            [ {BookPrice: current_price, Time: time} ],
+            [ {BookPrice: current_price, Time: time} ],
         ];
     }
 
@@ -194,39 +206,37 @@ class NFL_Function {
     return prices;
   }
 
-  computePrice(athlete, time) {
+  computePrice(athlete, time, lgWeightOnBase, sumLeaguePlateAppearances) {
     try {
-        athlete.Time = time;
-        var numerator = athlete.PassingYards +
-            athlete.RushingYards +
-            athlete.ReceivingYards +
-            athlete.RushingTouchdowns +
-            athlete.ReceivingTouchdowns +
-            athlete.PassingTouchdowns +
-            athlete.Receptions +
-            athlete.PassingInterceptions +
-            athlete.FumblesLost;
-        
-        var denominator = athlete.OffensiveSnapsPlayed;
-        if (denominator == 0)
-            denominator = athlete.DefensiveSnapsPlayed;
-        if (Math.min(numerator, denominator) <= 0)
-            athlete.Price = 0;
-        else {
-            var finalNFLPrice = numerator / denominator;
+        const avg50yrRPW = 9.757;
+        const mlbPositionalAdjustments = {
+            "C": 12.5,
+            "1B": -12.5,
+            "2B": 2.5,
+            "3B": 2.5,
+            "SS": 7.5,
+            "LF": -7.5,
+            "CF": 2.5,
+            "RF": -7.5,
+            "DH": -17.5
+        };
 
-            // ensure price is in range of 0 and 1000
-            if (finalNFLPrice < 0)
-                athlete.Price = 0;
-            else if (finalNFLPrice > 1000)
-                athlete.Price = 1000;
-            else 
-                athlete.Price = finalNFLPrice;
-        }
+        const battingRuns = (athlete.PlateAppearances * (athlete.WeightedOnBasePercentage - lgWeightOnBase)) / 1.25;
+        const baseRunningRuns = athlete.StolenBases * 0.2;
+        const fieldingRuns = athlete.Games === 0 ? 0 : (athlete.Errors * -10) / (athlete.Games * 9);
+        const positionalAdjustments = (athlete.Games * 9 * mlbPositionalAdjustments[athlete.Position] ) / 1458.0;
+        const replacementRuns = sumLeaguePlateAppearances === 0 ? 0 : (athlete.PlateAppearances * 5561.49) / sumLeaguePlateAppearances;
+        const statsNumerator = battingRuns + baseRunningRuns + fieldingRuns + positionalAdjustments + replacementRuns;
+
+        // restrict the price to between 0 and 15000
+        const price = Math.min(15000, Math.max(0, (statsNumerator / avg50yrRPW)));
+        
+        athlete.Time = time;
+        athlete.Price = price;
     } catch (error) {
         console.error(error);
     }
   }
 }
 
-module.exports = NFL_Function;
+module.exports = MLB_Function;

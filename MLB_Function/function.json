@@ -1,0 +1,10 @@
+{
+  "bindings": [
+    {
+      "name": "mlb_hourly_updates",
+      "type": "timerTrigger",
+      "direction": "in",
+      "schedule": "0 0 */1 * * *"
+    }
+  ]
+}

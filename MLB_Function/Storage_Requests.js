@@ -2,7 +2,7 @@ const https = require('https');
 const crypto = require('crypto');
 const fetchPromise = import('node-fetch');
 
-class NFT_Storage_Request {
+class Storage_Request {
     constructor() {}
 
     getResponse(url, token) {
@@ -53,7 +53,6 @@ class NFT_Storage_Request {
             athlete_id_list.push(directory.files[i].name);
         }
       
-        // console.log(`Athlete ID List: ${athlete_id_list}`);
         return athlete_id_list;
     }
   
@@ -64,7 +63,6 @@ class NFT_Storage_Request {
             token,
         );
         
-        // console.log("Fetched Athlete via ID: " + JSON.stringify(athlete_file));
         return athlete_file;
     }
   
@@ -76,7 +74,7 @@ class NFT_Storage_Request {
         );
     }
   
-    async uploadAndDelete(athleteJsons, old_directory, token, github_access_token) {
+    async uploadAndDelete(athleteJsons, old_directory, token, github_access_token, league) {
     
         const did = await this.getDID(token);
     
@@ -117,62 +115,56 @@ class NFT_Storage_Request {
               responseData += chunk;
             });
           
-            res.on('end', () => {
-                // update sports-cids (if the write happened)
+            res.on('end', async () => {
                 const response = JSON.parse(responseData);
+                
                 if (response.ok) {
+                    
+                    // update sports-cids (if the write happened)
                     const org = 'AthleteX-DAO';
                     const repo = 'sports-cids';
-                    const path = 'nfl.json';
+                    const path = `${league}.json`;
                     const url = `https://api.github.com/repos/${org}/${repo}/contents/${path}`;
 
                     const new_directory_cid = response.value.cid;
 
                     // Fetch the current content of the file
-                    fetch(url, {
-                    headers: {
-                        'Authorization': `Bearer ${github_access_token}`,
-                        'Accept': 'application/vnd.github.v3+json'
-                    }
-                    })
-                    .then(response => response.json())
-                    .then(data => {
-                        // Parse the content as base64 and decode it
-                        const content = Buffer.from(data.content, 'base64').toString('utf-8');
-
-                        // Parse the JSON
-                        const json = JSON.parse(content);
-
-                        // Update the directory property
-                        json.directory = new_directory_cid;
-
-                        // Encode the JSON as base64
-                        const newContent = Buffer.from(JSON.stringify(json), 'utf-8').toString('base64');
-
-                        // Commit the changes to the file
-                        return fetch(url, {
-                            method: 'PUT',
-                            headers: {
+                    const data = await fetch(url, {
+                        headers: {
                             'Authorization': `Bearer ${github_access_token}`,
                             'Accept': 'application/vnd.github.v3+json'
-                            },
-                            body: JSON.stringify({
+                        }
+                    }).then(response => response.json());
+                    
+                    // Parse the content as base64 and decode it
+                    const content = Buffer.from(data.content, 'base64').toString('utf-8');
+                    // Parse the JSON
+                    const json = JSON.parse(content);
+                    // Update the directory property
+                    json.directory = new_directory_cid;
+                    // Encode the JSON as base64
+                    const newContent = Buffer.from(JSON.stringify(json), 'utf-8').toString('base64');
+                    // Commit the changes to the file
+                    const updateResponse = await fetch(url, {
+                        method: 'PUT',
+                        headers: {
+                            'Authorization': `Bearer ${github_access_token}`,
+                            'Accept': 'application/vnd.github.v3+json'
+                        },
+                        body: JSON.stringify({
                             message: 'Update directory in nfl.json',
                             content: newContent,
                             sha: data.sha
-                            })
-                        });
-                    })
-                    .then(response => {
-                        if (response.ok) {
-                            // console.log('File updated successfully!');
-                        } else {
-                            console.error('Failed to update file:', response.statusText);
-                        }
-                    })
-                    .catch(error => {
-                        console.error('Error:', error);
+                        })
                     });
+
+                    if (updateResponse.ok) {
+                        if (old_directory != null) {
+                            this.deleteFile(old_directory, token);
+                        }
+                    } else {
+                        console.error('Failed to update file:', updateResponse.statusText);
+                    }
                 } else {
                     console.error('Upload failed:', response);
                 }
@@ -182,13 +174,9 @@ class NFT_Storage_Request {
         req.on('error', error => {
             console.error(error);
         });
-    
-        // write the payload to the request 
+        
+        // write the payload to the request
         req.write(payload);
-        if (old_directory != null) {
-            this.deleteFile(old_directory, token);
-        }
-    
         req.end();
     }
 
@@ -206,14 +194,11 @@ class NFT_Storage_Request {
           }
           return response.json();
         })
-        .then(data => {
-        //   console.log(data);
-        })
         .catch(error => {
           console.error(error);
         });
     }
 }
   
-module.exports = NFT_Storage_Request;
+module.exports = Storage_Request;
 
