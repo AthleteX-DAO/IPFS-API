@@ -25,13 +25,23 @@ class MLB_Function {
     // Get sportsdata key for mlb
     const sd_key = await secretClient.getSecret(sd_secretName).then(result => result.value);
 
+    console.log(`pre ath get`)
+
     // get athletes from sportsdata
     const sdAthleteList = await sportsDataRequest.getSportsdataAthletes("MLB", sd_key);
+
+    console.log(`post ath get`)
+
     // get the current time
     const current_time = new Date();
 
+    console.log(`post time`)
+
     // seperate list of athletes and athlete file directory
     var storage_athlete_list;
+
+    console.log(`sal`)
+
     var athlete_directory;
 
     console.log(`github start`)
