@@ -37,8 +37,6 @@ class MLB_Function {
 
     const github_response = await axios.get('https://raw.githubusercontent.com/AthleteX-DAO/sports-cids/main/mlb.json');
     const { list, directory } = github_response.data;
-
-    console.log(`github: ${list} ${directory}`);
     
     storage_athlete_list = list;
     // if only the athlete list exists
@@ -49,13 +47,9 @@ class MLB_Function {
     else {
         athlete_directory = directory;
     }
-
-    console.log("53")
     
     storage_athlete_list = await nftStorageRequest.fetchDesiredAthleteList(storage_athlete_list, nft_mlb_token);
     storage_athlete_list = storage_athlete_list.athletes;
-
-    console.log(`storage: ${storage_athlete_list}`)
 
     // list of AthleteIDs in the directory
     var file_list = [];

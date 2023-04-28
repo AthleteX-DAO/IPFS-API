@@ -159,7 +159,7 @@ class Storage_Request {
                     });
 
                     if (updateResponse.ok) {
-                        if (old_directory != null) {
+                        if (old_directory !== null) {
                             this.deleteFile(old_directory, token);
                         }
                     } else {
@@ -181,7 +181,7 @@ class Storage_Request {
     }
 
     deleteFile(file, token) {
-        fetch("https://api.nft.storage/" + file.cid, {
+        fetch("https://api.nft.storage/" + file, {
           method: 'DELETE',
           headers: {
             'Authorization': token,
