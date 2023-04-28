@@ -2,6 +2,7 @@ const NFT_Storage_Request = require('./Storage_Requests.js');
 const SPORTSDATA_Requests = require('./SPORTSDATA_Requests.js');
 const { DefaultAzureCredential } = require('@azure/identity');
 const { SecretClient } = require('@azure/keyvault-secrets');
+const axios = require('axios');
 
 class MLB_Function {
   constructor() {}
@@ -24,15 +25,10 @@ class MLB_Function {
     // Get sportsdata key for mlb
     const sd_key = await secretClient.getSecret(sd_secretName).then(result => result.value);
 
-    console.log(`keys: ${sd_key}`);
-
     // get athletes from sportsdata
     const sdAthleteList = await sportsDataRequest.getSportsdataAthletes("MLB", sd_key);
     // get the current time
     const current_time = new Date();
-
-    console.log(`list: ${sdAthleteList}`);
-
 
     // seperate list of athletes and athlete file directory
     var storage_athlete_list;
