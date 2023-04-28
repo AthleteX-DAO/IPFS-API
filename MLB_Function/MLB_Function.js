@@ -34,6 +34,9 @@ class MLB_Function {
     var storage_athlete_list;
     var athlete_directory;
 
+    console.log(`github start`)
+    console.log(await axios.get('https://raw.githubusercontent.com/AthleteX-DAO/sports-cids/main/mlb.json'))
+
     const github_response = await axios.get('https://raw.githubusercontent.com/AthleteX-DAO/sports-cids/main/mlb.json');
     const { list, directory } = github_response.data;
 
