@@ -15,14 +15,13 @@ class NFL_Function {
 
     const storageName = "STORAGE-NFL-PROD";
     const githubName = "GITHUB-PAK"
-    // get github access key
-    const github_secretClient = new SecretClient(url, credential);
-    const nft_nba_token = await github_secretClient.getSecret(storageName).then(result => result.value);
-    const github_access_token = await github_secretClient.getSecret(githubName).then(result => result.value);
-    // Get sportsdata key for nlf
     const sd_secretName = "SD-NFL-KEY";
-    const sd_secretClient = new SecretClient(secretUrl, credential);
-    const sd_key = await sd_secretClient.getSecret(sd_secretName).then(result => result.value);
+    const secretClient = new SecretClient(url, credential);
+    const nft_nba_token = await secretClient.getSecret(storageName).then(result => result.value);
+    // get github access key
+    const github_access_token = await secretClient.getSecret(githubName).then(result => result.value);
+    // Get sportsdata key for nlf
+    const sd_key = await secretClient.getSecret(sd_secretName).then(result => result.value);
 
 
     // get athletes from sportsdata
@@ -76,21 +75,21 @@ class NFL_Function {
 
         // add needed vars to new athlete
         var cur_athlete_json = {
-            id: current_athlete.PlayerID,
-            name: current_athlete.Name,
-            team: current_athlete.Team,
-            position: current_athlete.Position,
-            passingYards: current_athlete.PassingYards,
-            passingTouchdowns: current_athlete.PassingTouchdowns,
-            reception: current_athlete.Receptions,
-            receivingYards: current_athlete.ReceivingYards,
-            receivingTouchdowns: current_athlete.ReceivingTouchdowns,
-            rushingYards: current_athlete.RushingYards,
+            ID: current_athlete.PlayerID,
+            Name: current_athlete.Name,
+            Team: current_athlete.Team,
+            Position: current_athlete.Position,
+            PassingYards: current_athlete.PassingYards,
+            PassingTouchdowns: current_athlete.PassingTouchdowns,
+            Reception: current_athlete.Receptions,
+            ReceivingYards: current_athlete.ReceivingYards,
+            ReceivingTouchdowns: current_athlete.ReceivingTouchdowns,
+            RushingYards: current_athlete.RushingYards,
             PassingInterceptions: current_athlete.PassingInterceptions,
-            offensiveSnapsPlayed: current_athlete.OffensiveSnapsPlayed,
-            defensiveSnapsPlayed: current_athlete.DefensiveSnapsPlayed,
-            price: current_athlete.Price,
-            timestamp: current_time,
+            OffensiveSnapsPlayed: current_athlete.OffensiveSnapsPlayed,
+            DefensiveSnapsPlayed: current_athlete.DefensiveSnapsPlayed,
+            BookPrice: current_athlete.Price,
+            Time: current_time,
         };
 
         // add the current athlete to the json list
@@ -101,10 +100,10 @@ class NFL_Function {
         const prices = await this.updatePriceList(file_list, current_athlete, athlete_directory, current_time, nft_nba_token);
         athlete_jsons.push(
             {
-                id: current_athlete.PlayerID+"_history",
-                name: current_athlete.Name,
-                hour: prices[0],
-                day: prices[1],
+                ID: current_athlete.PlayerID+"_history",
+                Name: current_athlete.Name,
+                Hour: prices[0],
+                Day: prices[1],
             } 
         );
     }
@@ -112,8 +111,8 @@ class NFL_Function {
     // add the all athletes file to the final json
     athlete_jsons.push(
         {
-            id: "ALL_PLAYERS",
-            athletes: all_athletes_json
+            ID: "ALL_PLAYERS",
+            Athletes: all_athletes_json
         }
     );
 
@@ -130,8 +129,8 @@ class NFL_Function {
     // if there is no file, return [[hour],[day]]
     if (!files.includes(file)) {
         return [
-            [ {price: current_price, timestamp: time} ],
-            [ {price: current_price, timestamp: time} ],
+            [ {BookPrice: current_price, Time: time} ],
+            [ {BookPrice: current_price, Time: time} ],
         ];
     }
 
