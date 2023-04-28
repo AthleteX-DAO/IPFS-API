@@ -37,6 +37,7 @@ class MLB_Function {
     var github_response;
 
     try {
+        console.log("main axios");
         github_response = await axios.get('https://raw.githubusercontent.com/AthleteX-DAO/sports-cids/main/mlb.json');
     } catch (error) {
         console.error(`main: ${error.response.data}`);

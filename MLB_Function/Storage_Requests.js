@@ -7,6 +7,7 @@ class Storage_Request {
   
     async getDID(token) {
         try {
+            console.log("getDID");
             const did_request = await axios.get(
                 "https://api.nft.storage/did", {
                 headers: {
@@ -24,6 +25,7 @@ class Storage_Request {
   
     async fetchStorage(cid, token) {
         try {
+            console.log("fetchStorage");
             const response = await axios.get(
                 `https://api.nft.storage/${cid}`, {
                 headers: {
@@ -53,6 +55,7 @@ class Storage_Request {
     async fetchFile(directory, fileName, token) {
         let cid = directory.cid;
         try {
+            console.log("fetchFile");
             const athlete_file = await axios.get(
                 "https://" + cid + ".ipfs.nftstorage.link/" + fileName, {
                     headers: {
@@ -71,6 +74,7 @@ class Storage_Request {
     async fetchDesiredAthleteList(directory, token) {
         let cid = directory.cid;
         try {
+            console.log("fetchDesiredAthleteList");
             return await await axios.get(
                 "https://" + cid + ".ipfs.nftstorage.link/", {
                     headers: {
