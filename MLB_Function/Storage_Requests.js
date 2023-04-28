@@ -67,7 +67,7 @@ class Storage_Request {
     }
   
     async fetchDesiredAthleteList(directory, token) {
-        let cid = directory.cid;
+        // let cid = directory.cid;
         return await this.getResponse(
             "https://" + cid + ".ipfs.nftstorage.link/",
             token,
