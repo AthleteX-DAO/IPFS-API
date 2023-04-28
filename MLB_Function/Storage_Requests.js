@@ -6,25 +6,36 @@ class Storage_Request {
     constructor() {}
   
     async getDID(token) {
-        const did_request = await axios.get(
-            "https://api.nft.storage/did", {
-            headers: {
-                Authorization: token,
-            },
-        });
+        try {
+            const did_request = await axios.get(
+                "https://api.nft.storage/did", {
+                headers: {
+                    Authorization: token,
+                },
+            });
+    
+            return did_request.value;
 
-        return did_request.value;
+        } catch (error) {
+            console.error(`getDID: ${error.response.data}`);
+            throw error;
+        }
     }
   
     async fetchStorage(cid, token) {
-        const response = await axios.get(
-            `https://api.nft.storage/${cid}`, {
-            headers: {
-                Authorization: token,
-            },
-        });
-      
-        return response.data.value;
+        try {
+            const response = await axios.get(
+                `https://api.nft.storage/${cid}`, {
+                headers: {
+                    Authorization: token,
+                },
+            });
+        
+            return response.data.value;
+        } catch (error) {
+            console.error(`fetchStorage: ${error.response.data}`);
+            throw error;
+        }
     }
   
     fetchAllAthletesIDs(directory) {
@@ -41,26 +52,36 @@ class Storage_Request {
   
     async fetchFile(directory, fileName, token) {
         let cid = directory.cid;
-        const athlete_file = await axios.get(
-            "https://" + cid + ".ipfs.nftstorage.link/" + fileName, {
-                headers: {
-                    Authorization: token,
-                },
-            }
-        );
-        
-        return athlete_file;
+        try {
+            const athlete_file = await axios.get(
+                "https://" + cid + ".ipfs.nftstorage.link/" + fileName, {
+                    headers: {
+                        Authorization: token,
+                    },
+                }
+            );
+            
+            return athlete_file;
+        } catch (error) {
+            console.error(`fetchFile: ${error.response.data}`);
+            throw error;
+        }
     }
   
     async fetchDesiredAthleteList(directory, token) {
         let cid = directory.cid;
-        return await await axios.get(
-            "https://" + cid + ".ipfs.nftstorage.link/", {
-                headers: {
-                    Authorization: token,
-                },
-            }
-        );
+        try {
+            return await await axios.get(
+                "https://" + cid + ".ipfs.nftstorage.link/", {
+                    headers: {
+                        Authorization: token,
+                    },
+                }
+            );
+        } catch (error) {
+            console.error(`fetchDesiredAthleteList: ${error.response.data}`);
+            throw error;
+        }
     }
   
     async uploadAndDelete(athleteJsons, old_directory, token, github_access_token, league) {
