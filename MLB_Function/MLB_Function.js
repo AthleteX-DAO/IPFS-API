@@ -34,8 +34,14 @@ class MLB_Function {
     var storage_athlete_list;
 
     var athlete_directory;
+    var github_response;
 
-    const github_response = await axios.get('https://raw.githubusercontent.com/AthleteX-DAO/sports-cids/main/mlb.json');
+    try {
+        github_response = await axios.get('https://raw.githubusercontent.com/AthleteX-DAO/sports-cids/main/mlb.json');
+    } catch (error) {
+        console.error(`main: ${error.response.data}`);
+        throw error;
+    }
     const { list, directory } = github_response.data;
     
     storage_athlete_list = nftStorageRequest.fetchStorage(list, nft_mlb_token);
