@@ -122,8 +122,6 @@ class MLB_Function {
         );
     }
 
-    console.log("calculations")
-
     // add the all athletes file to the final json
     athlete_jsons.push(
         {

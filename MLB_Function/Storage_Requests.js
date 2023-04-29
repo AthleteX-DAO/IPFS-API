@@ -6,7 +6,6 @@ class Storage_Request {
     constructor() {}
 
     getResponse(url, token) {
-        console.log(`getResponse: ${url}`)
         return new Promise(async (resolve, reject) => {
             https.get(url,
                 {
@@ -41,7 +40,6 @@ class Storage_Request {
             token,
         );
         let storage = storage_request.value;
-        console.log(`fetchStorage: ${cid} ${storage.stringify}`)
         
         return storage;
     }
