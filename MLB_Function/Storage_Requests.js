@@ -14,9 +14,11 @@ class Storage_Request {
                 (response) => {
                     let data = '';
                     response.on('data', (chunk) => {
+                        console.log(chunk)
                         data += chunk;
                     });
                     response.on('end', () => {
+                        console.log(`end:` + data)
                         resolve(JSON.parse(data));
                     });
                     response.on('error', (error) => {
