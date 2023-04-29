@@ -37,6 +37,7 @@ class Storage_Request {
     }
   
     async fetchStorage(cid, token) {
+        console.log(`fetchStorage: https://api.nft.storage/${cid}`);
         const directory_request = await this.getResponse(
             `https://api.nft.storage/${cid}`,
             token,
