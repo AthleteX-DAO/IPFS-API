@@ -6,7 +6,7 @@ class Storage_Request {
     constructor() {}
 
     getResponse(url, token) {
-        console.log(`getResponse: ${url} ${token}`)
+        console.log(`getResponse: ${url}`)
         return new Promise(async (resolve, reject) => {
             https.get(url,
                 {

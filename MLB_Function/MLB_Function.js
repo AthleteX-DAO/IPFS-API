@@ -47,6 +47,13 @@ class MLB_Function {
     else {
         athlete_directory = nftStorageRequest.fetchStorage(directory, nft_mlb_token);
     }
+
+    console.log('main')
+
+    console.log(storage_athlete_list)
+    console.log(storage_athlete_list.stringify)
+    console.log(JSON.parse(storage_athlete_list))
+    console.log(JSON.parse(storage_athlete_list).stringify)
     
     storage_athlete_list = await nftStorageRequest.fetchDesiredAthleteList(storage_athlete_list, nft_mlb_token);
     storage_athlete_list = storage_athlete_list.athletes;
