@@ -6,6 +6,7 @@ class Storage_Request {
     constructor() {}
 
     getResponse(url, token) {
+        console.log(`getResponse: ${url} ${token}`)
         return new Promise(async (resolve, reject) => {
             https.get(url,
                 {
@@ -14,11 +15,9 @@ class Storage_Request {
                 (response) => {
                     let data = '';
                     response.on('data', (chunk) => {
-                        console.log(chunk)
                         data += chunk;
                     });
                     response.on('end', () => {
-                        console.log(`end:` + data)
                         resolve(JSON.parse(data));
                     });
                     response.on('error', (error) => {
@@ -37,7 +36,6 @@ class Storage_Request {
     }
   
     async fetchStorage(cid, token) {
-        console.log(`fetchStorage: https://api.nft.storage/${cid}`);
         const directory_request = await this.getResponse(
             `https://api.nft.storage/${cid}`,
             token,
