@@ -36,13 +36,14 @@ class Storage_Request {
     }
   
     async fetchStorage(cid, token) {
-        const directory_request = await this.getResponse(
+        const storage_request = await this.getResponse(
             `https://api.nft.storage/${cid}`,
             token,
         );
-        let directory = directory_request.value;
+        let storage = storage_request.value;
+        console.log(`fetchStorage: ${cid} ${storage}`)
         
-        return directory;
+        return storage;
     }
   
     fetchAllAthletesIDs(directory) {
