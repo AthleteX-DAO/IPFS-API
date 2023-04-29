@@ -48,7 +48,7 @@ class MLB_Function {
         athlete_directory = nftStorageRequest.fetchStorage(directory, nft_mlb_token);
     }
     
-    storage_athlete_list = await nftStorageRequest.fetchDesiredAthleteList(storage_athlete_list.value, nft_mlb_token);
+    storage_athlete_list = await nftStorageRequest.fetchDesiredAthleteList(storage_athlete_list, nft_mlb_token);
     storage_athlete_list = storage_athlete_list.athletes;
 
     // list of AthleteIDs in the directory

@@ -41,7 +41,7 @@ class Storage_Request {
             token,
         );
         let storage = storage_request.value;
-        console.log(`fetchStorage: ${cid} ${storage}`)
+        console.log(`fetchStorage: ${cid} ${storage.stringify}`)
         
         return storage;
     }
