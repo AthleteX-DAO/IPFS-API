@@ -26,7 +26,7 @@ class MLB_Function {
     const sd_key = await secretClient.getSecret(sd_secretName).then(result => result.value);
 
     // get athletes from sportsdata
-    const sdAthleteList = await sportsDataRequest.getSportsdataAthletes("MLB", sd_key);
+    const sdAthleteList = await sportsDataRequest.getSportsdataAthletes("MLB", 2023, sd_key);
     // get the current time
     const current_time = new Date();
 
@@ -102,6 +102,10 @@ class MLB_Function {
             StolenBases: current_athlete.StolenBases,
             Errors: current_athlete.Errors,
             Games: current_athlete.Games,
+            HomeRuns: current_athlete.HomeRuns,
+            Strikeouts: current_athlete.Strikeouts,
+            Saves: current_athlete.Saves,
+            AtBats: current_athlete.AtBats,
             BookPrice: current_athlete.Price,
             Time: current_time,
         };
@@ -196,11 +200,11 @@ class MLB_Function {
     if (time_update && prices.length == NUM_PRICE_ENTRIES) {
         // removes first
         prices.shift();
-        prices.push( {price: current_price, timestamp: time} );
+        prices.push( {BookPrice: current_price, Time: time} );
     }
     // if not at max capacity, just add
     else if (time_update) {
-        prices.push( {price: current_price, timestamp: time} );
+        prices.push( {BookPrice: current_price, Time: time} );
     }
 
     // return prices

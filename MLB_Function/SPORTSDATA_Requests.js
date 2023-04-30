@@ -5,9 +5,9 @@ const { SecretClient } = require('@azure/keyvault-secrets');
 class SPORTSDATA_Requests {
     constructor() {}
   
-    async getSportsdataAthletes(sport, key) {
+    async getSportsdataAthletes(sport, season, key) {
         const URL_prefix = `https://api.sportsdata.io/v3/`;
-        const URL_suffix = `/stats/json/PlayerSeasonStats/2022?key=`
+        const URL_suffix = `/stats/json/PlayerSeasonStats/${season}?key=`
 
         let url = URL_prefix + sport + URL_suffix + key;
         
