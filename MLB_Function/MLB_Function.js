@@ -164,7 +164,7 @@ class MLB_Function {
 
   updateInterval(prices, interval, current_price, time) {
     // prices ranging from old to newest, storing the last NUM_PRICE_ENTRIES prices
-    const NUM_PRICE_ENTRIES = 12;
+    const NUM_PRICE_ENTRIES = 2;
     var time_update = false;
 
     switch (interval) {
@@ -190,20 +190,14 @@ class MLB_Function {
             break;
     }
     
-    // if at past capacity, delete first few until at capacity
-    while (prices.length > NUM_PRICE_ENTRIES) {
+    // if at past or max capacity, delete first few until 1 below capacity
+    while (prices.length >= NUM_PRICE_ENTRIES) {
         // removes first
         prices.shift();
     }
 
-    // if at max capacity, remove and add
-    if (time_update && prices.length == NUM_PRICE_ENTRIES) {
-        // removes first
-        prices.shift();
-        prices.push( {BookPrice: current_price, Time: time} );
-    }
-    // if not at max capacity, just add
-    else if (time_update) {
+    // if time for an update
+    if (time_update) {
         prices.push( {BookPrice: current_price, Time: time} );
     }
 
