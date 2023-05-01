@@ -190,15 +190,15 @@ class MLB_Function {
             break;
     }
     
-    // if at past or max capacity, delete first few until 1 below capacity
-    while (prices.length >= NUM_PRICE_ENTRIES) {
-        // removes first
-        prices.shift();
-    }
-
-    // if time for an update
+    // if time for an update, add to end of list
     if (time_update) {
         prices.push( {BookPrice: current_price, Time: time} );
+    }
+
+    // if at past or max capacity, delete first few until at capacity
+    while (prices.length > NUM_PRICE_ENTRIES) {
+        // removes first
+        prices.shift();
     }
 
     // return prices
