@@ -164,7 +164,7 @@ class MLB_Function {
 
   updateInterval(prices, interval, current_price, time) {
     // prices ranging from old to newest, storing the last NUM_PRICE_ENTRIES prices
-    const NUM_PRICE_ENTRIES = 2;
+    const NUM_PRICE_ENTRIES = 12;
     var time_update = false;
 
     switch (interval) {
