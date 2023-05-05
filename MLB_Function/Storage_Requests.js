@@ -152,7 +152,7 @@ class Storage_Request {
                             'Accept': 'application/vnd.github.v3+json'
                         },
                         body: JSON.stringify({
-                            message: 'Update directory in nfl.json',
+                            message: 'Update directory in mlb.json',
                             content: newContent,
                             sha: data.sha
                         })
